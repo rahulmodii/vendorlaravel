@@ -15,7 +15,7 @@ class VendorController extends Controller
     public function create(Request $request){
         try {
             $validator = Validator::make($request->all(), [
-                'vendorname' => 'required',
+                'vendorname' => 'required|unique:vendors',
                 'first_name' => 'required',
                 'last_name'=>'required',
                 'country'=>'required',
@@ -31,11 +31,12 @@ class VendorController extends Controller
             $image =Storage::disk('public')->put('images',$request->file('image'));
             $pdfdocument =Storage::disk('public')->put('pdf',$request->file('pdfdocument'));
             $query = Vendor::create(['vendor_name'=>$request->vendorname,'first_name'=>$request->first_name,
-            'last_name'=>$request->last_name,'country'=>$request->country,'address'=>$request->address,'image'=>$image,'pdfdocument'=>$pdfdocument]);
+            'last_name'=>$request->last_name,'country'=>$request->country,'address'=>$request->address,
+            'image'=>$image,'pdfdocument'=>$pdfdocument]);
             $response=['msg'=>'created successfully','status'=>200];
             return response()->json($response);
         } catch (\Throwable $th) {
-            dd($th);
+            abort(500, 'Something went wrong');
         }
     }
 
@@ -50,7 +51,7 @@ class VendorController extends Controller
          $response=['data'=>new VendorResource($query),'status'=>200];
          return response()->json($response);
         } catch (\Throwable $th) {
-            dd($th);
+            abort(500, 'Something went wrong');
         }
     }
 
@@ -63,7 +64,7 @@ class VendorController extends Controller
             $query= new VendorResource($query);
             return response()->json(['data'=>$query,'status'=>200]);
         } catch (\Throwable $th) {
-
+            abort(500, 'Something went wrong');
         }
     }
 
@@ -76,7 +77,7 @@ class VendorController extends Controller
             $response=['data'=>$value,'status'=>200];
             return response()->json($response);
         } catch (\Throwable $th) {
-            dd($th);
+            abort(500, 'Something went wrong');
         }
     }
 
@@ -100,7 +101,7 @@ class VendorController extends Controller
             }
 
         } catch (\Throwable $th) {
-            //throw $th;
+            abort(500, 'Something went wrong');
         }
     }
     public function countries(){
@@ -110,7 +111,7 @@ class VendorController extends Controller
             $response=['data'=>$data,'status'=>200];
             return response()->json($response);
         } catch (\Throwable $th) {
-            //throw $th;
+            abort(500, 'Something went wrong');
         }
     }
 }
